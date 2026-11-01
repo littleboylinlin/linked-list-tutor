@@ -1,5 +1,6 @@
 import { FLOAT_ROW_Y, type AlgorithmDefinition, type AlgorithmStep, type ArrowVisual, type NodePosition } from './types';
 import { createNodes, makeArrows, rowPositions, step, targetX, valueOf } from './layout';
+import { integerParam } from './parameters';
 
 const code = [
   'ListNode* reverseKGroup(ListNode* head, int k) {',
@@ -30,7 +31,7 @@ export const reverseKGroup: AlgorithmDefinition = {
     const nodes = createNodes(values);
     let order = nodes.map((node) => node.id);
     const steps: AlgorithmStep[] = [];
-    const k = Math.max(2, Math.min(params.k, Math.max(2, order.length)));
+    const k = integerParam(params.k, 3, 1);
     let start = 0;
     let prevGroup: string | null = null;
 

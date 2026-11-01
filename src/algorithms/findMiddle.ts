@@ -40,7 +40,7 @@ export const findMiddle: AlgorithmDefinition = {
       push('slow 走一步', 'slow-one', [5], `slow 走一步到 ${valueOf(nodes, ids[slow])}。fast 比 slow 快一倍，所以 slow 最终停在中点。`, [ids[slow]]);
     }
 
-    push('找到中点', 'done', [8], ids.length % 2 === 0 ? `偶数长度时返回第二个中点：${valueOf(nodes, ids[slow])}。` : `奇数长度时 slow 正好停在中点：${valueOf(nodes, ids[slow])}。`, [ids[slow]]);
+    push('找到中点', 'done', [8], !ids.length ? '链表为空，返回 nullptr。' : ids.length % 2 === 0 ? `偶数长度时返回第二个中点：${valueOf(nodes, ids[slow])}。` : `奇数长度时 slow 正好停在中点：${valueOf(nodes, ids[slow])}。`, ids[slow] ? [ids[slow]] : []);
     return steps;
   },
 };

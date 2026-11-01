@@ -1,5 +1,6 @@
 import { type AlgorithmDefinition, type AlgorithmStep } from './types';
 import { circlePositions, createNodes, makeArrows, rowPositions, step, valueOf } from './layout';
+import { integerParam } from './parameters';
 
 const code = [
   'bool hasCycle(ListNode* head) {',
@@ -21,13 +22,12 @@ export const detectCycle: AlgorithmDefinition = {
   fileName: 'detect-cycle.cpp',
   code,
   makeSteps(values, params) {
-    const nodes = createNodes(values.length > 1 ? values : [1, 2, 3, 4]);
+    const nodes = createNodes(values);
     const ids = nodes.map((node) => node.id);
-    const entryIndex = Math.max(0, Math.min(params.cycleEntryIndex, ids.length - 1));
+    const entryIndex = integerParam(params.cycleEntryIndex, 0, 0, Math.max(0, ids.length - 1));
     const entry = ids[entryIndex] ?? null;
-    const hasCycle = params.cycleEnabled;
+    const hasCycle = params.cycleEnabled && ids.length > 0;
     const baseArrows = hasCycle ? [...makeArrows(ids), { from: ids[ids.length - 1], to: entry, state: 'cycle' as const }] : makeArrows(ids);
-    const positions = hasCycle ? circlePositions(nodes, ids) : rowPositions(nodes, ids);
     const steps: AlgorithmStep[] = [];
     let slow = 0;
     let fast = 0;

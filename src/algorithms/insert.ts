@@ -1,5 +1,6 @@
 import { FLOAT_ROW_Y, TOP_ROW_Y, type AlgorithmDefinition, type AlgorithmStep, type NodeSnapshot } from './types';
 import { createNodes, makeArrows, rowPositions, step, targetX, valueOf } from './layout';
+import { integerParam } from './parameters';
 
 const code = [
   'ListNode* insertAt(ListNode* head, int index, int value) {',
@@ -27,7 +28,7 @@ export const insert: AlgorithmDefinition = {
     const newNode: NodeSnapshot = { id: 'newNode', value: params.insertValue };
     const nodes = [newNode, ...base];
     const ids = base.map((node) => node.id);
-    const index = Math.max(0, Math.min(params.insertIndex, ids.length));
+    const index = integerParam(params.insertIndex, 0, 0, ids.length);
     const prev = index === 0 ? null : ids[index - 1];
     const cur = ids[index] ?? null;
     const inserted = [...ids.slice(0, index), newNode.id, ...ids.slice(index)];

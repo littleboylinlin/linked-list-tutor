@@ -1,5 +1,6 @@
 import { TOP_ROW_Y, type AlgorithmDefinition, type AlgorithmStep } from './types';
 import { createNodes, makeArrows, rowPositions, step, targetX, valueOf } from './layout';
+import { integerParam } from './parameters';
 
 const code = [
   'ListNode* removeNthFromEnd(ListNode* head, int n) {',
@@ -29,13 +30,18 @@ export const removeNth: AlgorithmDefinition = {
   makeSteps(values, params) {
     const nodes = createNodes(values);
     const ids = nodes.map((node) => node.id);
-    const n = Math.max(1, Math.min(params.n, ids.length));
+    const n = integerParam(params.n, 1, 1, Math.max(1, ids.length));
     const steps: AlgorithmStep[] = [];
     let fast = -1;
     let slow = -1;
     const ptr = (index: number) => (index >= 0 && index < ids.length ? ids[index] : index === -1 ? null : null);
 
     steps.push(step(nodes, '初始化 dummy / fast / slow', 'init', rowPositions(nodes, ids), makeArrows(ids), { dummy: ids[0] ?? null, head: ids[0] ?? null, fast: null, slow: null }, [1, 2, 3, 4], 'fast 和 slow 都从 dummy 出发。fast 先走 n+1 步，是为了让 slow 停在待删除节点的前一个位置。', [], { rowLabels: { bottom: '原链表' } }));
+
+    if (!ids.length) {
+      steps.push(step(nodes, '空链表', 'done', {}, [], { head: null }, [15], '链表为空，没有可删除的节点。'));
+      return steps;
+    }
 
     for (let i = 0; i <= n; i += 1) {
       fast += 1;
@@ -55,7 +61,8 @@ export const removeNth: AlgorithmDefinition = {
     steps.push(step(nodes, '定位待删除节点', 'locate-del', rowPositions(nodes, ids, undefined, { active: [ptr(slow), del].filter(Boolean) as string[] }), makeArrows(ids), { dummy: ids[0] ?? null, head: ids[0] ?? null, slow: ptr(slow), del }, [12], `slow->next 就是倒数第 ${n} 个节点：${valueOf(nodes, del)}。`, [ptr(slow), del].filter(Boolean) as string[], { rowLabels: { bottom: '定位删除点' } }));
     steps.push(step(nodes, 'slow->next 绕过 del', 'bypass', rowPositions(nodes, ids, undefined, { active: [ptr(slow), del, next].filter(Boolean) as string[] }), [...makeArrows(ids).filter((arrow) => arrow.from !== ptr(slow) && arrow.from !== del), ...(ptr(slow) && next ? [{ from: ptr(slow)!, to: next, state: 'new' as const }] : [])], { dummy: after[0] ?? null, head: after[0] ?? null, slow: ptr(slow), del }, [13], 'slow->next 指向 del->next，逻辑上把 del 从链表中摘掉。', [ptr(slow), del, next].filter(Boolean) as string[], { rowLabels: { bottom: '重连中' } }));
     steps.push(step(nodes, '删除 del', 'remove-del', rowPositions(nodes, ids, undefined, { active: del ? [del] : [], lifted: del, faded: del ? [del] : [], overrides: del ? { [del]: { x: targetX(delIndex), y: TOP_ROW_Y - 72, lifted: true, faded: true } } : {} }), makeArrows(after, 'new'), { dummy: after[0] ?? null, head: after[0] ?? null, slow: ptr(slow), del }, [14], 'del 淡出移走，表示释放这个节点。', del ? [del] : [], { liftedNodeId: del, movingNodeId: del, rowLabels: { bottom: '删除后链表' } }));
-    steps.push(step(nodes, '返回结果', 'done', rowPositions(nodes, after), makeArrows(after), { dummy: after[0] ?? null, head: after[0] ?? null }, [15], '返回 dummy.next，删除倒数第 N 个节点完成。', [], { rowLabels: { bottom: '最终链表' } }));
+    const remainingNodes = nodes.filter((node) => node.id !== del);
+    steps.push(step(remainingNodes, '返回结果', 'done', rowPositions(remainingNodes, after), makeArrows(after), { dummy: after[0] ?? null, head: after[0] ?? null }, [15], '返回 dummy.next，删除倒数第 N 个节点完成。', [], { rowLabels: { bottom: '最终链表' } }));
     return steps;
   },
 };
