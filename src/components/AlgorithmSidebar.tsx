@@ -1,6 +1,7 @@
 import { algorithms, type AlgorithmId, type AlgorithmParams } from "../algorithms";
 import type { UpdateParam } from "../algorithms/parameters";
 import type { SpeedMode } from "../playback/speed";
+import { ArrowRightIcon, BrandMark } from "./icons";
 import { ParameterPanel } from "./ParameterPanel";
 import { SpeedPanel } from "./SpeedPanel";
 
@@ -16,34 +17,73 @@ type AlgorithmSidebarProps = {
   onSpeedChange: (speed: SpeedMode) => void;
 };
 
+const englishNames: Record<AlgorithmId, string> = {
+  reverse: "Reverse List",
+  insert: "Insert Node",
+  delete: "Delete Node",
+  findMiddle: "Middle Node",
+  swapPairs: "Swap Pairs",
+  reverseKGroup: "Reverse K-Group",
+  detectCycle: "Linked List Cycle",
+  removeNth: "Remove Nth From End",
+};
+
+/** "反转链表 reverse" → "反转链表"; labels without a latin suffix are kept as-is. */
+function chineseName(label: string) {
+  return label.replace(/\s+[a-zA-Z][a-zA-Z ]*$/, "");
+}
+
 export function AlgorithmSidebar({ algorithmId, onSelect, input, onInputChange, onApplyInput, params, updateParam, speedMode, onSpeedChange }: AlgorithmSidebarProps) {
   return (
     <aside className="sidebar">
-      <div className="brand-block">
-        <span className="eyebrow">C++ Linked List Tutor</span>
-        <h1>单链表交互教学</h1>
-        <p>选择算法，观察节点、箭头和指针标签如何一步步变化。</p>
-      </div>
-      <section className="panel">
-        <h2>算法列表</h2>
-        {algorithms.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`algo-card ${item.id === algorithmId ? "active" : ""}`}
-            aria-pressed={item.id === algorithmId}
-            onClick={() => onSelect(item.id)}
-          >{item.label}</button>
-        ))}
-      </section>
-      <form className="panel" onSubmit={(event) => { event.preventDefault(); onApplyInput(); }}>
-        <h2>初始链表</h2>
-        <label className="input-label" htmlFor="list-input">输入数字，使用空格或逗号分隔</label>
-        <div className="input-row">
-          <input id="list-input" value={input} onChange={(event) => onInputChange(event.target.value)} placeholder="1 2 3 4 5" />
-          <button type="submit">应用</button>
+      <div className="brand">
+        <BrandMark />
+        <div>
+          <h1>单链表交互教学</h1>
+          <p>Linked List Tutor · C++</p>
         </div>
+      </div>
+
+      <nav className="side-section" aria-label="算法列表">
+        <h2 className="section-title">算法</h2>
+        <div className="algo-list">
+          {algorithms.map((item, index) => {
+            const active = item.id === algorithmId;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`algo-item ${active ? "active" : ""}`}
+                aria-pressed={active}
+                onClick={() => onSelect(item.id)}
+              >
+                <span className="algo-index">{String(index + 1).padStart(2, "0")}</span>
+                <span className="algo-text">
+                  <strong>{chineseName(item.label)}</strong>
+                  <small>{englishNames[item.id]}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      <form className="side-section" onSubmit={(event) => { event.preventDefault(); onApplyInput(); }}>
+        <h2 className="section-title">初始链表</h2>
+        <div className="input-row">
+          <input
+            id="list-input"
+            aria-label="初始链表"
+            value={input}
+            onChange={(event) => onInputChange(event.target.value)}
+            placeholder="1 2 3 4 5"
+            spellCheck={false}
+          />
+          <button type="submit" aria-label="应用链表" title="应用"><ArrowRightIcon size={16} /></button>
+        </div>
+        <p className="hint">数字之间用空格或逗号分隔，最多 9 个节点。</p>
       </form>
+
       <ParameterPanel algorithmId={algorithmId} params={params} updateParam={updateParam} />
       <SpeedPanel algorithmId={algorithmId} speedMode={speedMode} setSpeedMode={onSpeedChange} />
     </aside>

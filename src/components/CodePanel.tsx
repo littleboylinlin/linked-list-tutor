@@ -19,15 +19,15 @@ export function CodePanel({
     <aside className="code-panel">
       <div className="code-header">
         <div className="window-title">
-          <span className="dot red" />
-          <span className="dot yellow" />
-          <span className="dot green" />
+          <span className="file-badge">{languageLabels[language]}</span>
           <strong>{snippet.fileName}</strong>
         </div>
-        <div className="language-tabs" aria-label="code language">
+        <div className="language-tabs" role="group" aria-label="代码语言">
           {(['cpp', 'c', 'python'] as CodeLanguage[]).map((item) => (
             <button
               key={item}
+              type="button"
+              aria-pressed={language === item}
               className={language === item ? 'active' : ''}
               onClick={() => onLanguageChange(item)}
             >
@@ -43,7 +43,7 @@ export function CodePanel({
           return (
             <code key={lineNumber} className={active ? 'active-line' : ''}>
               <span className="line-number">{lineNumber}</span>
-              <span>{line}</span>
+              <span className="line-code">{line || ' '}</span>
             </code>
           );
         })}

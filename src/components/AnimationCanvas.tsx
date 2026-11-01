@@ -72,7 +72,9 @@ function NodeView({
       }}
     >
       <span className="node-value">{node.value}</span>
-      <span className="next-field">next</span>
+      <span className="next-field" title="next">
+        <i />
+      </span>
     </div>
   );
 }
@@ -81,8 +83,8 @@ function ArrowLayer({ step }: { step: AlgorithmStep }) {
   return (
     <svg className="arrow-layer" width="100%" height="100%" aria-hidden="true">
       <defs>
-        <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-          <path d="M 0 0 L 10 5 L 0 10 z" />
+        <marker id="arrow-head" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M 0 0.5 L 8 4.5 L 0 8.5 z" />
         </marker>
       </defs>
       {step.arrows.map((arrow, index) => (
@@ -97,9 +99,9 @@ function ArrowPath({ arrow, step }: { arrow: ArrowVisual; step: AlgorithmStep })
   const to = step.positions[arrow.to];
   if (!from || !to) return null;
 
-  const x1 = from.x + NODE_WIDTH - 2;
+  const x1 = from.x + NODE_WIDTH - 14; // starts from the dot inside the next field
   const y1 = from.y + NODE_HEIGHT / 2;
-  const x2 = to.x + 2;
+  const x2 = to.x - 1;
   const y2 = to.y + NODE_HEIGHT / 2;
   const reverse = x2 < x1;
   const mid = Math.max(34, Math.abs(x2 - x1) / 2);
@@ -132,7 +134,7 @@ function PointerLayer({ step }: { step: AlgorithmStep }) {
             className="pointer-badge"
             style={
               {
-                '--pointer-color': pointerColors[name] ?? '#475467',
+                '--pointer-color': pointerColors[name] ?? 'var(--ink-2)',
                 transform: `translate(${position.x + NODE_WIDTH / 2 - 27}px, ${position.y - 42 - index * 26}px)`,
               } as CSSProperties
             }
@@ -155,13 +157,13 @@ function NullStrip({ pointers }: { pointers: Record<string, string | null | unde
       <span className="nullptr-chip">nullptr</span>
       <div className="null-pointer-list">
         {nullPointers.length === 0 ? (
-          <p>空指针单独放在这里，链表画布里只显示指向节点的标签。</p>
+          <p>指向空的指针会停在这里，画布里只显示指向节点的标签。</p>
         ) : (
           nullPointers.map((name) => (
             <span
               key={name}
               className="pointer-badge static-badge"
-              style={{ '--pointer-color': pointerColors[name] ?? '#475467' } as CSSProperties}
+              style={{ '--pointer-color': pointerColors[name] ?? 'var(--ink-2)' } as CSSProperties}
             >
               {name}
             </span>

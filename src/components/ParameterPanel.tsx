@@ -8,49 +8,61 @@ type ParameterPanelProps = {
 };
 
 export function ParameterPanel({ algorithmId, params, updateParam }: ParameterPanelProps) {
+  const noParams = ["reverse", "findMiddle", "swapPairs"].includes(algorithmId);
+
   return (
-    <section className="panel parameter-panel">
-      <h2>算法参数</h2>
-      {algorithmId === "insert" && (
-        <>
-          <NumberInput label="插入位置 index" value={params.insertIndex} min={0} onChange={(value) => updateParam("insertIndex", value)} />
-          <NumberInput label="插入值 value" value={params.insertValue} onChange={(value) => updateParam("insertValue", value)} />
-        </>
-      )}
-      {algorithmId === "delete" && (
-        <NumberInput label="删除位置 index" value={params.deleteIndex} min={0} onChange={(value) => updateParam("deleteIndex", value)} />
-      )}
-      {algorithmId === "reverseKGroup" && (
-        <NumberInput label="每组数量 k" value={params.k} min={1} onChange={(value) => updateParam("k", value)} />
-      )}
-      {algorithmId === "detectCycle" && (
-        <>
-          <label className="toggle-row">
-            <input type="checkbox" checked={params.cycleEnabled} onChange={(event) => updateParam("cycleEnabled", event.target.checked)} />
-            创建环
-          </label>
-          <NumberInput label="环入口位置" value={params.cycleEntryIndex} min={0} onChange={(value) => updateParam("cycleEntryIndex", value)} />
-        </>
-      )}
-      {algorithmId === "removeNth" && (
-        <NumberInput label="倒数第 n 个" value={params.n} min={1} onChange={(value) => updateParam("n", value)} />
-      )}
-      {["reverse", "findMiddle", "swapPairs"].includes(algorithmId) && (
-        <p className="parameter-hint">这个算法不需要额外参数，直接使用当前链表。</p>
+    <section className="side-section">
+      <h2 className="section-title">算法参数</h2>
+      {noParams ? (
+        <p className="hint">这个算法不需要额外参数，直接使用当前链表。</p>
+      ) : (
+        <div className="param-grid">
+          {algorithmId === "insert" && (
+            <>
+              <NumberInput label="插入位置" sub="index" value={params.insertIndex} min={0} onChange={(value) => updateParam("insertIndex", value)} />
+              <NumberInput label="插入值" sub="value" value={params.insertValue} onChange={(value) => updateParam("insertValue", value)} />
+            </>
+          )}
+          {algorithmId === "delete" && (
+            <NumberInput label="删除位置" sub="index" value={params.deleteIndex} min={0} onChange={(value) => updateParam("deleteIndex", value)} />
+          )}
+          {algorithmId === "reverseKGroup" && (
+            <NumberInput label="每组数量" sub="k" value={params.k} min={1} onChange={(value) => updateParam("k", value)} />
+          )}
+          {algorithmId === "detectCycle" && (
+            <>
+              <label className="switch-row">
+                <span>创建环</span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  className="switch"
+                  checked={params.cycleEnabled}
+                  onChange={(event) => updateParam("cycleEnabled", event.target.checked)}
+                />
+              </label>
+              <NumberInput label="环入口位置" sub="index" value={params.cycleEntryIndex} min={0} onChange={(value) => updateParam("cycleEntryIndex", value)} />
+            </>
+          )}
+          {algorithmId === "removeNth" && (
+            <NumberInput label="倒数第 n 个" sub="n" value={params.n} min={1} onChange={(value) => updateParam("n", value)} />
+          )}
+        </div>
       )}
     </section>
   );
 }
 
-function NumberInput({ label, value, min, onChange }: {
+function NumberInput({ label, sub, value, min, onChange }: {
   label: string;
+  sub?: string;
   value: number;
   min?: number;
   onChange: (value: number) => void;
 }) {
   return (
-    <label className="param-field">
-      <span>{label}</span>
+    <label className="field">
+      <span className="field-label">{label}{sub && <code>{sub}</code>}</span>
       <input type="number" value={value} min={min} step={1} onChange={(event) => onChange(Number(event.target.value))} />
     </label>
   );

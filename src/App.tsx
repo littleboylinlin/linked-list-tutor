@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { algorithms, type AlgorithmId } from "./algorithms";
 import { AlgorithmSidebar } from "./components/AlgorithmSidebar";
 import { AnimationCanvas } from "./components/AnimationCanvas";
@@ -18,9 +18,12 @@ function App() {
   const steps = useMemo(() => algorithm.makeSteps(appliedValues, params), [algorithm, appliedValues, params]);
   const playback = useStepPlayback(steps, { delay: getPlaybackDelay(speedMode, algorithmId) });
   const { step, index } = playback;
+  const progress = steps.length > 1 ? (index / (steps.length - 1)) * 100 : 100;
+
+  useKeyboardShortcuts(playback);
 
   return (
-    <main className="app-shell">
+    <div className="app-shell">
       <AlgorithmSidebar
         algorithmId={algorithmId}
         onSelect={setAlgorithmId}
@@ -32,32 +35,77 @@ function App() {
         speedMode={speedMode}
         onSpeedChange={setSpeedMode}
       />
-      <section className="visual-area">
-        <div className="visual-header">
-          <div>
-            <span className="eyebrow">Phase {index + 1} / {steps.length}</span>
-            <h2>{algorithm.title}</h2>
-          </div>
-          <div className="progress-track" role="progressbar" aria-label="phase progress" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={index + 1}>
-            <div style={{ width: `${((index + 1) / steps.length) * 100}%` }} />
-          </div>
-        </div>
-        <div className="phase-chip-row"><span>{step.phase}</span><strong>{step.title}</strong></div>
-        <AnimationCanvas step={step} />
-      </section>
-      <CodePanel algorithmId={algorithm.id} language={codeLanguage} activeLines={step.activeLines} onLanguageChange={setCodeLanguage} />
-      <StepController
-        explanation={step.explanation}
-        canPrev={playback.canPrev}
-        canNext={playback.canNext}
-        isPlaying={playback.isPlaying}
-        onPrev={playback.previous}
-        onNext={playback.next}
-        onTogglePlay={playback.togglePlay}
-        onReset={playback.reset}
-      />
-    </main>
+      <main className="workspace">
+        <section className="stage-card">
+          <header className="stage-header">
+            <div className="stage-heading">
+              <h2>{algorithm.title}</h2>
+              <div className="phase-line">
+                <span className="phase-chip">{step.phase}</span>
+                <span className="phase-title">{step.title}</span>
+              </div>
+            </div>
+            <div className="step-meter">
+              <span className="step-count">
+                <strong>{index + 1}</strong>
+                <span>/ {steps.length}</span>
+              </span>
+              <div className="progress-track" role="progressbar" aria-label="步骤进度" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={index + 1}>
+                <div style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          </header>
+          <AnimationCanvas step={step} />
+        </section>
+        <CodePanel algorithmId={algorithm.id} language={codeLanguage} activeLines={step.activeLines} onLanguageChange={setCodeLanguage} />
+        <StepController
+          explanation={step.explanation}
+          canPrev={playback.canPrev}
+          canNext={playback.canNext}
+          isPlaying={playback.isPlaying}
+          onPrev={playback.previous}
+          onNext={playback.next}
+          onTogglePlay={playback.togglePlay}
+          onReset={playback.reset}
+        />
+      </main>
+    </div>
   );
+}
+
+type ShortcutTarget = {
+  canPrev: boolean;
+  canNext: boolean;
+  previous: () => void;
+  next: () => void;
+  togglePlay: () => void;
+};
+
+/** ← / → step through the timeline, space toggles autoplay (ignored while typing). */
+function useKeyboardShortcuts(playback: ShortcutTarget) {
+  const latest = useRef(playback);
+  latest.current = playback;
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
+      const current = latest.current;
+      if (event.key === "ArrowRight" && current.canNext) {
+        event.preventDefault();
+        current.next();
+      } else if (event.key === "ArrowLeft" && current.canPrev) {
+        event.preventDefault();
+        current.previous();
+      } else if (event.key === " " && !target?.closest("button")) {
+        event.preventDefault();
+        current.togglePlay();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 }
 
 export default App;
