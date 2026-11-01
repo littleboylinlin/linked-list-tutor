@@ -17,7 +17,7 @@ type AlgorithmSidebarProps = {
   onSpeedChange: (speed: SpeedMode) => void;
 };
 
-const englishNames: Record<AlgorithmId, string> = {
+export const englishNames: Record<AlgorithmId, string> = {
   reverse: "Reverse List",
   insert: "Insert Node",
   delete: "Delete Node",
@@ -29,7 +29,7 @@ const englishNames: Record<AlgorithmId, string> = {
 };
 
 /** "反转链表 reverse" → "反转链表"; labels without a latin suffix are kept as-is. */
-function chineseName(label: string) {
+export function chineseName(label: string) {
   return label.replace(/\s+[a-zA-Z][a-zA-Z ]*$/, "");
 }
 
@@ -39,13 +39,13 @@ export function AlgorithmSidebar({ algorithmId, onSelect, input, onInputChange, 
       <div className="brand">
         <BrandMark />
         <div>
-          <h1>单链表交互教学</h1>
-          <p>Linked List Tutor · C++</p>
+          <h1>单链表<br />交互教学</h1>
+          <p>LINKED LIST TUTOR · C++</p>
         </div>
       </div>
 
       <nav className="side-section" aria-label="算法列表">
-        <h2 className="section-title">算法</h2>
+        <h2 className="section-title"><span>ALGORITHMS</span>算法</h2>
         <div className="algo-list">
           {algorithms.map((item, index) => {
             const active = item.id === algorithmId;
@@ -69,7 +69,7 @@ export function AlgorithmSidebar({ algorithmId, onSelect, input, onInputChange, 
       </nav>
 
       <form className="side-section" onSubmit={(event) => { event.preventDefault(); onApplyInput(); }}>
-        <h2 className="section-title">初始链表</h2>
+        <h2 className="section-title"><span>INPUT</span>初始链表</h2>
         <div className="input-row">
           <input
             id="list-input"

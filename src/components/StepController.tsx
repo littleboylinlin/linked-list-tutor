@@ -22,7 +22,7 @@ export function StepController({
   return (
     <footer className="control-bar">
       <div className="explain">
-        <span className="explain-label">讲解</span>
+        <span className="explain-label">NOTE 讲解</span>
         <p key={explanation} aria-live="polite">{explanation}</p>
       </div>
       <div className="controls">

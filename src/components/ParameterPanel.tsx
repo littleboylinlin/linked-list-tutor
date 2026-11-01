@@ -12,7 +12,7 @@ export function ParameterPanel({ algorithmId, params, updateParam }: ParameterPa
 
   return (
     <section className="side-section">
-      <h2 className="section-title">算法参数</h2>
+      <h2 className="section-title"><span>PARAMS</span>算法参数</h2>
       {noParams ? (
         <p className="hint">这个算法不需要额外参数，直接使用当前链表。</p>
       ) : (

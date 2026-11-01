@@ -12,9 +12,11 @@ import { contentWidth } from '../algorithms/layout';
 
 type AnimationCanvasProps = {
   step: AlgorithmStep;
+  /** Changes on every step so the active node can replay its bounce. */
+  stepIndex: number;
 };
 
-export function AnimationCanvas({ step }: AnimationCanvasProps) {
+export function AnimationCanvas({ step, stepIndex }: AnimationCanvasProps) {
   const stageWidth = Math.max(contentWidth(step.nodes.length + 2), maxPositionX(step.positions) + 220);
 
   return (
@@ -33,6 +35,7 @@ export function AnimationCanvas({ step }: AnimationCanvasProps) {
               position={step.positions[node.id]}
               active={step.activeNodeIds.includes(node.id)}
               lifted={step.liftedNodeId === node.id}
+              stepIndex={stepIndex}
             />
           ))}
         </div>
@@ -51,30 +54,36 @@ function NodeView({
   position,
   active,
   lifted,
+  stepIndex,
 }: {
   node: NodeSnapshot;
   position: NodePosition | undefined;
   active: boolean;
   lifted: boolean;
+  stepIndex: number;
 }) {
   const safePosition = position ?? { x: 92, y: 318 };
   const isLifted = lifted || safePosition.lifted;
   const scale = isLifted ? 1.08 : 1;
   const y = isLifted ? safePosition.y - 8 : safePosition.y;
+  const isActive = active || Boolean(safePosition.active);
 
   return (
     <div
-      className={`node-card ${active || safePosition.active ? 'active-node' : ''} ${isLifted ? 'lifted-node' : ''} ${
+      className={`node-card ${isActive ? 'active-node' : ''} ${isLifted ? 'lifted-node' : ''} ${
         safePosition.faded || node.ghost ? 'faded-node' : ''
       }`}
       style={{
         transform: `translate(${safePosition.x}px, ${y}px) scale(${scale})`,
       }}
     >
-      <span className="node-value">{node.value}</span>
-      <span className="next-field" title="next">
-        <i />
-      </span>
+      {/* The outer box only moves; the body carries the look and remounts each step while active, replaying the bounce. */}
+      <div className="node-body" key={isActive ? `active-${stepIndex}` : 'idle'}>
+        <span className="node-value">{node.value}</span>
+        <span className="next-field" title="next">
+          <i />
+        </span>
+      </div>
     </div>
   );
 }
@@ -83,8 +92,8 @@ function ArrowLayer({ step }: { step: AlgorithmStep }) {
   return (
     <svg className="arrow-layer" width="100%" height="100%" aria-hidden="true">
       <defs>
-        <marker id="arrow-head" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
-          <path d="M 0 0.5 L 8 4.5 L 0 8.5 z" />
+        <marker id="arrow-head" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M 0 0.5 L 12 6.5 L 0 12.5 z" />
         </marker>
       </defs>
       {step.arrows.map((arrow, index) => (
