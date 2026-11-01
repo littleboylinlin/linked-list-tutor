@@ -51,13 +51,14 @@ export const ArrowRightIcon = (props: IconProps) => (
   <Icon {...props}><path d="M5 12h14M13 6l6 6-6 6" /></Icon>
 );
 
+/** White plate on the blue sidebar; the red cell sits inside the white, never on the blue. */
 export function BrandMark() {
   return (
     <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" className="brand-mark">
-      <rect width="36" height="36" rx="10" fill="var(--accent)" />
-      <rect x="6.5" y="13" width="9" height="10" rx="2.5" fill="none" stroke="#fff" strokeWidth="2" />
-      <rect x="20.5" y="13" width="9" height="10" rx="2.5" fill="#fff" />
-      <path d="M15.5 18h5" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      <rect width="36" height="36" rx="10" fill="#ffffff" />
+      <rect x="6.5" y="13" width="9" height="10" rx="2.5" fill="none" stroke="#0b0b0c" strokeWidth="2" />
+      <rect x="20.5" y="13" width="9" height="10" rx="2.5" fill="var(--neon-red)" />
+      <path d="M15.5 18h5" stroke="#0b0b0c" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }

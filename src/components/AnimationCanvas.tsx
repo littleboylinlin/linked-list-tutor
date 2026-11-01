@@ -131,11 +131,11 @@ function PointerLayer({ step }: { step: AlgorithmStep }) {
         return names.map((name, index) => (
           <span
             key={`${name}-${nodeId}`}
-            className="pointer-badge"
+            className={`pointer-badge ${index > 0 ? 'stacked' : ''}`}
             style={
               {
                 '--pointer-color': pointerColors[name] ?? 'var(--ink-2)',
-                transform: `translate(${position.x + NODE_WIDTH / 2 - 27}px, ${position.y - 42 - index * 26}px)`,
+                transform: `translate(${position.x + NODE_WIDTH / 2 - 27}px, ${position.y - 42 - index * 28}px)`,
               } as CSSProperties
             }
           >

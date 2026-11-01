@@ -73,20 +73,21 @@ export const TOP_ROW_Y = 118;
 export const FLOAT_ROW_Y = 218;
 export const BOTTOM_ROW_Y = 318;
 
+// Red / blue / black family only. prev · cur · nxt = 霓虹赤 · 电光蓝 · 黑.
 export const pointerColors: Record<string, string> = {
-  head: '#7c3aed',
-  dummy: '#9333ea',
-  prev: '#0f766e',
-  cur: '#2563eb',
-  nxt: '#ea580c',
-  newNode: '#db2777',
-  del: '#dc2626',
-  slow: '#16a34a',
-  fast: '#f59e0b',
-  first: '#0284c7',
-  second: '#c026d3',
-  groupStart: '#0891b2',
-  groupEnd: '#be123c',
-  prevGroup: '#0f766e',
-  nextGroup: '#ea580c',
+  prev: '#f5011a',
+  cur: '#0247fe',
+  nxt: '#0b0b0c',
+  head: '#48484e',
+  dummy: '#83838a',
+  newNode: '#0247fe',
+  del: '#0b0b0c',
+  slow: '#0247fe',
+  fast: '#f5011a',
+  first: '#0247fe',
+  second: '#0b0b0c',
+  groupStart: '#0247fe',
+  groupEnd: '#0b0b0c',
+  prevGroup: '#f5011a',
+  nextGroup: '#48484e',
 };
