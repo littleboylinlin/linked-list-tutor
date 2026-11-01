@@ -4,6 +4,7 @@ import { AlgorithmSidebar, chineseName, englishNames } from "./components/Algori
 import { AnimationCanvas } from "./components/AnimationCanvas";
 import { CodePanel } from "./components/CodePanel";
 import { StepController } from "./components/StepController";
+import { ChevronDownIcon } from "./components/icons";
 import { useStepPlayback } from "./hooks/useStepPlayback";
 import { useTutorInputs } from "./hooks/useTutorInputs";
 import { getPlaybackDelay, type SpeedMode } from "./playback/speed";
@@ -13,6 +14,8 @@ function App() {
   const [algorithmId, setAlgorithmId] = useState<AlgorithmId>("reverse");
   const [speedMode, setSpeedMode] = useState<SpeedMode>("normal");
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>("cpp");
+  // Mobile only: the algorithm menu collapses into the topbar.
+  const [menuOpen, setMenuOpen] = useState(false);
   const { input, setInput, appliedValues, params, updateParam, applyInput } = useTutorInputs();
   const algorithm = algorithms.find((item) => item.id === algorithmId) ?? algorithms[0];
   const steps = useMemo(() => algorithm.makeSteps(appliedValues, params), [algorithm, appliedValues, params]);
@@ -27,7 +30,11 @@ function App() {
     <div className="app-shell">
       <AlgorithmSidebar
         algorithmId={algorithmId}
-        onSelect={setAlgorithmId}
+        open={menuOpen}
+        onSelect={(id) => {
+          setAlgorithmId(id);
+          setMenuOpen(false);
+        }}
         input={input}
         onInputChange={setInput}
         onApplyInput={applyInput}
@@ -48,6 +55,16 @@ function App() {
             <strong>{pad(index + 1)}</strong>
             <span className="big-counter-total">/ {pad(steps.length)}</span>
           </div>
+          <button
+            type="button"
+            className="menu-toggle"
+            aria-expanded={menuOpen}
+            aria-controls="algorithm-menu"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span>{menuOpen ? "收起" : "算法"}</span>
+            <ChevronDownIcon size={16} />
+          </button>
         </header>
         <main className="content">
           <section className="stage-card">
@@ -62,6 +79,11 @@ function App() {
             </header>
             <AnimationCanvas step={step} stepIndex={index} />
           </section>
+          {/* Mobile only: the explanation sits right under the canvas instead of in the bottom bar. */}
+          <section className="mobile-explain" aria-label="当前步骤讲解">
+            <span className="explain-label">NOTE 讲解</span>
+            <p key={step.explanation}>{step.explanation}</p>
+          </section>
           <CodePanel algorithmId={algorithm.id} language={codeLanguage} activeLines={step.activeLines} onLanguageChange={setCodeLanguage} />
         </main>
         <StepController
@@ -73,6 +95,8 @@ function App() {
           onNext={playback.next}
           onTogglePlay={playback.togglePlay}
           onReset={playback.reset}
+          speedMode={speedMode}
+          onSpeedChange={setSpeedMode}
         />
       </div>
     </div>

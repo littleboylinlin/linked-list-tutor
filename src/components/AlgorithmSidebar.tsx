@@ -15,6 +15,8 @@ type AlgorithmSidebarProps = {
   updateParam: UpdateParam;
   speedMode: SpeedMode;
   onSpeedChange: (speed: SpeedMode) => void;
+  /** Mobile only: whether the collapsible menu is expanded. Ignored on desktop. */
+  open?: boolean;
 };
 
 export const englishNames: Record<AlgorithmId, string> = {
@@ -33,9 +35,9 @@ export function chineseName(label: string) {
   return label.replace(/\s+[a-zA-Z][a-zA-Z ]*$/, "");
 }
 
-export function AlgorithmSidebar({ algorithmId, onSelect, input, onInputChange, onApplyInput, params, updateParam, speedMode, onSpeedChange }: AlgorithmSidebarProps) {
+export function AlgorithmSidebar({ algorithmId, onSelect, input, onInputChange, onApplyInput, params, updateParam, speedMode, onSpeedChange, open = false }: AlgorithmSidebarProps) {
   return (
-    <aside className="sidebar">
+    <aside id="algorithm-menu" className={`sidebar ${open ? "open" : ""}`}>
       <div className="brand">
         <BrandMark />
         <div>

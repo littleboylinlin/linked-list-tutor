@@ -9,7 +9,7 @@ export function SpeedPanel({ speedMode, setSpeedMode, algorithmId }: {
   algorithmId: AlgorithmId;
 }) {
   return (
-    <section className="side-section">
+    <section className="side-section speed-section">
       <h2 className="section-title"><span>SPEED</span>播放速度</h2>
       <div className="segmented" role="group" aria-label="播放速度">
         {(["slow", "normal", "fast"] as const).map((mode) => (

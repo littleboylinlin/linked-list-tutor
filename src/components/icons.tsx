@@ -47,6 +47,18 @@ export const ResetIcon = (props: IconProps) => (
   </Icon>
 );
 
+export const ChevronDownIcon = (props: IconProps) => (
+  <Icon {...props}><path d="M6 9l6 6 6-6" /></Icon>
+);
+
+export const MoreIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <circle cx="5" cy="12" r="1.6" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+    <circle cx="19" cy="12" r="1.6" fill="currentColor" />
+  </Icon>
+);
+
 export const ArrowRightIcon = (props: IconProps) => (
   <Icon {...props}><path d="M5 12h14M13 6l6 6-6 6" /></Icon>
 );

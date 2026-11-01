@@ -1211,3 +1211,385 @@ pre {
     display: none;
   }
 }
+
+/* ==========================================================================
+   Mobile (≤768px) — collapsible menu, canvas first, fixed control bar.
+   Everything above this block is the desktop layout and stays untouched.
+   ========================================================================== */
+.menu-toggle,
+.mobile-explain,
+.code-toggle,
+.more-wrap {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --bar-space: calc(92px + env(safe-area-inset-bottom));
+  }
+
+  /* Flatten .main so topbar → menu → content can be ordered as one column. */
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .main {
+    display: contents;
+  }
+
+  /* Topbar: name + small counter + menu button */
+  .topbar {
+    order: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px 10px 14px;
+  }
+
+  .topbar-title .kicker,
+  .topbar-en,
+  .big-counter .kicker {
+    display: none;
+  }
+
+  .topbar h2 {
+    margin: 0;
+    font-size: 23px;
+    text-shadow: 3px 3px 0 var(--black);
+  }
+
+  .big-counter {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+
+  .big-counter strong {
+    font-size: 26px;
+    text-shadow: 3px 3px 0 var(--black);
+  }
+
+  .big-counter-total {
+    padding: 0;
+    font-size: 13px;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 38px;
+    padding: 0 10px;
+    border: var(--bw) solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    box-shadow: 3px 3px 0 var(--black);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .menu-toggle svg {
+    transition: transform 160ms var(--ease-out);
+  }
+
+  .menu-toggle[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+
+  .menu-toggle:active {
+    box-shadow: none;
+    transform: translate(3px, 3px);
+  }
+
+  /* Menu: drops down under the topbar, hidden until opened */
+  .sidebar {
+    order: 2;
+    display: none;
+    position: static;
+    height: auto;
+    gap: 18px;
+    padding: 16px 14px 20px;
+    border-right: 0;
+    border-bottom: var(--bw) solid var(--stroke);
+  }
+
+  .sidebar.open {
+    display: flex;
+    animation: drop-in 180ms var(--ease-out);
+  }
+
+  .brand,
+  .speed-section {
+    display: none;
+  }
+
+  .algo-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .algo-item {
+    gap: 8px;
+    padding: 6px;
+  }
+
+  .algo-index {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .algo-text strong {
+    font-size: 13px;
+  }
+
+  .algo-text small {
+    font-size: 9px;
+  }
+
+  /* Content: canvas → explanation → code, with room for the fixed bar */
+  .content {
+    order: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px 17px var(--bar-space) 12px;
+  }
+
+  .stage-card {
+    min-height: 0;
+    box-shadow: 5px 5px 0 var(--hard);
+  }
+
+  .stage-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .phase-line {
+    gap: 10px;
+  }
+
+  .phase-chip {
+    padding: 2px 6px;
+    font-size: 10.5px;
+    box-shadow: 2px 2px 0 var(--hard);
+  }
+
+  .phase-title {
+    font-size: 14px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 12px;
+  }
+
+  .canvas-card {
+    flex: none;
+  }
+
+  .canvas-scroll {
+    flex: none;
+    padding: 2px 12px;
+  }
+
+  .animation-stage {
+    margin: 0;
+    zoom: 0.78;
+  }
+
+  .null-strip {
+    min-height: 44px;
+    padding: 6px 10px;
+    gap: 10px;
+  }
+
+  .null-pointer-list p {
+    display: none;
+  }
+
+  .mobile-explain {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: var(--bw) solid var(--stroke);
+    background: var(--card);
+    box-shadow: 5px 5px 0 var(--hard);
+  }
+
+  .mobile-explain .explain-label {
+    border-color: var(--stroke);
+    background: var(--text);
+    color: var(--card);
+    box-shadow: none;
+    font-size: 10px;
+  }
+
+  .mobile-explain p {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 700;
+    line-height: 1.55;
+    animation: fade-up 220ms var(--ease-out);
+  }
+
+  /* Code: collapsed by default, tap to open */
+  .code-panel {
+    max-height: none;
+    box-shadow: 5px 5px 0 var(--electric-blue);
+  }
+
+  .code-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .window-title {
+    flex: 1;
+  }
+
+  .code-panel.open .window-title {
+    flex-basis: 100%;
+  }
+
+  .code-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 30px;
+    padding: 0 8px;
+    border: 2px solid var(--white);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .code-toggle[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+
+  .code-panel:not(.open) .code-header {
+    border-bottom: 0;
+  }
+
+  .code-panel:not(.open) .language-tabs,
+  .code-panel:not(.open) .code-block {
+    display: none;
+  }
+
+  .code-block {
+    max-height: 60vh;
+    font-size: 12.5px;
+  }
+
+  /* Control bar: fixed to the bottom, one short row */
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding: 10px 14px calc(12px + env(safe-area-inset-bottom)) 12px;
+  }
+
+  .control-bar .explain {
+    display: none;
+  }
+
+  .controls {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .ctrl-group {
+    flex: 1;
+    gap: 8px;
+  }
+
+  .ctrl {
+    height: 46px;
+    padding: 0 12px;
+    box-shadow: 3px 3px 0 var(--black);
+  }
+
+  .ctrl.play {
+    min-width: 0;
+  }
+
+  .ctrl.primary {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .more-wrap {
+    display: block;
+    position: relative;
+  }
+
+  .more-toggle[aria-expanded="true"] {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .more-panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 16px);
+    display: grid;
+    gap: 10px;
+    width: min(260px, calc(100vw - 32px));
+    padding: 12px;
+    border: var(--bw) solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    box-shadow: 5px 5px 0 var(--black);
+    animation: drop-in 160ms var(--ease-out);
+  }
+
+  .more-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+  }
+
+  .more-panel .segmented {
+    box-shadow: 3px 3px 0 var(--black);
+  }
+}
+
+/* Touch screens: no sticky hover lift after a tap; disabled buttons read as solid grey on the blue bar. */
+@media (max-width: 768px) and (hover: none) {
+  .ctrl:not(:disabled):hover {
+    box-shadow: 3px 3px 0 var(--black);
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ctrl:disabled {
+    background: #cfcfcf;
+    color: #6b6b6b;
+    opacity: 1;
+  }
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

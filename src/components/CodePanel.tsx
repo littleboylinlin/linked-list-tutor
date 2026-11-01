@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { AlgorithmId } from '../algorithms';
+import { ChevronDownIcon } from './icons';
 import { codeSnippets, languageLabels, mapActiveLines, type CodeLanguage } from '../codeSnippets';
 
 export function CodePanel({
@@ -14,14 +16,20 @@ export function CodePanel({
 }) {
   const snippet = codeSnippets[algorithmId][language];
   const mappedActiveLines = mapActiveLines(algorithmId, language, activeLines);
+  // Mobile only: the code starts collapsed (CSS ignores this on desktop).
+  const [open, setOpen] = useState(false);
 
   return (
-    <aside className="code-panel">
+    <aside className={`code-panel ${open ? 'open' : ''}`}>
       <div className="code-header">
         <div className="window-title">
           <span className="file-badge">{languageLabels[language]}</span>
           <strong>{snippet.fileName}</strong>
         </div>
+        <button type="button" className="code-toggle" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+          {open ? '收起代码' : '展开代码'}
+          <ChevronDownIcon size={14} />
+        </button>
         <div className="language-tabs" role="group" aria-label="代码语言">
           {(['cpp', 'c', 'python'] as CodeLanguage[]).map((item) => (
             <button

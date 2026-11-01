@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import {
   NODE_HEIGHT,
   NODE_WIDTH,
@@ -18,11 +18,15 @@ type AnimationCanvasProps = {
 
 export function AnimationCanvas({ step, stepIndex }: AnimationCanvasProps) {
   const stageWidth = Math.max(contentWidth(step.nodes.length + 2), maxPositionX(step.positions) + 220);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  useFollowActiveNodes(scrollRef, stageRef, step, stageWidth);
 
   return (
     <div className="canvas-card">
-      <div className="canvas-scroll">
-        <div className="animation-stage" style={{ width: stageWidth }}>
+      <div className="canvas-scroll" ref={scrollRef}>
+        <div className="animation-stage" ref={stageRef} style={{ width: stageWidth }}>
           <div className="section-label reversed-label">{step.rowLabels?.top ?? '工作区 / 已处理部分'}</div>
           <div className="section-label pending-label">{step.rowLabels?.bottom ?? '链表主线 / 待处理部分'}</div>
           <div className="row-divider" />
@@ -43,6 +47,49 @@ export function AnimationCanvas({ step, stepIndex }: AnimationCanvasProps) {
       <NullStrip pointers={step.pointers} />
     </div>
   );
+}
+
+/**
+ * Narrow screens only: the list is wider than the phone, so after each step scroll
+ * the canvas horizontally until the nodes being worked on are visible. Uses the
+ * target positions from the step data (not the mid-transition DOM boxes).
+ */
+function useFollowActiveNodes(
+  scrollRef: React.RefObject<HTMLDivElement | null>,
+  stageRef: React.RefObject<HTMLDivElement | null>,
+  step: AlgorithmStep,
+  stageWidth: number,
+) {
+  useEffect(() => {
+    const container = scrollRef.current;
+    const stage = stageRef.current;
+    if (!container || !stage || !window.matchMedia('(max-width: 768px)').matches) return;
+
+    const focusIds = new Set<string>(step.activeNodeIds);
+    if (step.liftedNodeId) focusIds.add(step.liftedNodeId);
+    Object.entries(step.positions).forEach(([id, position]) => {
+      if (position.active || position.lifted) focusIds.add(id);
+    });
+    if (focusIds.size === 0) {
+      Object.values(step.pointers).forEach((target) => target && focusIds.add(target));
+    }
+    const xs = [...focusIds].map((id) => step.positions[id]?.x).filter((x): x is number => typeof x === 'number');
+    if (xs.length === 0) return;
+
+    // CSS zoom shrinks the stage on phones; measure the real scale instead of assuming it.
+    const scale = stage.getBoundingClientRect().width / stageWidth || 1;
+    const stageStart = stage.getBoundingClientRect().left - container.getBoundingClientRect().left + container.scrollLeft;
+    const left = stageStart + Math.min(...xs) * scale;
+    const right = stageStart + (Math.max(...xs) + NODE_WIDTH) * scale;
+    const margin = 24;
+    const viewLeft = container.scrollLeft;
+    const viewRight = viewLeft + container.clientWidth;
+    if (left >= viewLeft + margin && right <= viewRight - margin) return;
+
+    const span = right - left;
+    const target = span > container.clientWidth - margin * 2 ? left - margin : left + span / 2 - container.clientWidth / 2;
+    container.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  }, [scrollRef, stageRef, step, stageWidth]);
 }
 
 function maxPositionX(positions: Record<string, NodePosition>) {
