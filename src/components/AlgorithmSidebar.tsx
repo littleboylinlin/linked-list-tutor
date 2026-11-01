@@ -42,7 +42,7 @@ export function AlgorithmSidebar({ algorithmId, onSelect, input, onInputChange, 
         <BrandMark />
         <div>
           <h1>单链表<br />交互教学</h1>
-          <p>LINKED LIST TUTOR · C++</p>
+          <p>LINKED LIST TUTOR</p>
         </div>
       </div>
 
